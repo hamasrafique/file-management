@@ -1,161 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Online File Management System</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #0f172a; /* dark background */
-            color: #e5e7eb;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 600px;
-            background-color: #020617;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #38bdf8;
-        }
-
-        p.subtitle {
-            text-align: center;
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 25px;
-        }
-
-        form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        input[type="file"] {
-            flex: 1;
-            padding: 8px;
-            background-color: #020617;
-            color: #e5e7eb;
-            border: 1px solid #334155;
-            border-radius: 6px;
-        }
-
-        button {
-            padding: 8px 16px;
-            border: none;
-            background-color: #38bdf8;
-            color: #020617;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0ea5e9;
-        }
-
-        h3 {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 6px;
-            color: #f8fafc;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        li {
-            background-color: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .file-name {
-            font-size: 14px;
-            color: #e5e7eb;
-            max-width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .actions a {
-            text-decoration: none;
-            margin-left: 10px;
-            font-size: 13px;
-            padding: 5px 8px;
-            border-radius: 5px;
-        }
-
-        .download {
-            background-color: #22c55e;
-            color: #022c22;
-        }
-
-        .delete {
-            background-color: #ef4444;
-            color: #450a0a;
-        }
-
-        .actions a:hover {
-            opacity: 0.85;
-        }
-
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-            color: #64748b;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBox | Next Gen Storage</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-    <div class="container">
-        <h2>Online File Management System</h2>
-        <p class="subtitle">Cloud Computing Based Storage Service</p>
 
+    <!-- Animated Background Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>CloudBox</h1>
+            <p class="subtitle">Secure. Fast. Infinite.</p>
+        </header>
+
+        <!-- Upload Section -->
         <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" required>
-            <button type="submit">Upload</button>
+            <div class="upload-area">
+                <input type="file" name="file" id="fileInput" required>
+                <div class="upload-icon">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <p class="upload-text">Drag & Drop your files here</p>
+                <p class="upload-hint">or click to browse</p>
+            </div>
+
+            <button type="submit" class="btn-upload">
+                <i class="fa fa-rocket"></i> Upload File
+            </button>
         </form>
 
-        <h3>Stored Files</h3>
-        <ul>
-            {% for file in files %}
-            <li>
-                <span class="file-name">{{ file }}</span>
-                <div class="actions">
-                    <a class="download" href="/download/{{ file }}">Download</a>
-                    <a class="delete" href="/delete/{{ file }}">Delete</a>
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
+        <br>
+
+        <!-- File List Section -->
+        <div class="file-list-section">
+            <div class="file-list-header">
+                <h3><i class="fa-solid fa-folder-open"></i> Your Files</h3>
+            </div>
+
+            {% if files %}
+            <ul class="file-list">
+                {% for file in files %}
+                <li class="file-item">
+                    <div class="file-info">
+                        {% if file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                        <div class="file-preview">
+                            <img src="/preview/{{ file.id }}" alt="{{ file.name }}">
+                        </div>
+                        {% else %}
+                        <i class="fa-solid fa-file-lines file-type-icon"></i>
+                        {% endif %}
+                        <!-- Updated to use file.name from DB model -->
+                        <span class="file-name" title="{{ file.name }}">{{ file.name }}</span>
+                    </div>
+                    <div class="actions">
+                        <!-- Updated to use file.id from DB model -->
+                        <a href="/download/{{ file.id }}" class="btn-action btn-download" title="Download">
+                            <i class="fa-solid fa-download"></i> <span class="action-text">Download</span>
+                        </a>
+                        <a href="/delete/{{ file.id }}" class="btn-action btn-delete" title="Delete">
+                            <i class="fa-solid fa-trash"></i> <span class="action-text">Delete</span>
+                        </a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                <p>No files uploaded yet. Start by uploading one!</p>
+            </div>
+            {% endif %}
+        </div>
 
         <footer>
-            © Cloud Computing Mini Project
+            <p>&copy; 2026 CloudBox Project. Designed for the Future.</p>
         </footer>
     </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Flash Messages -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            Toast.fire({
+                icon: '{{ "success" if category == "success" else "error" }}',
+                title: '{{ message }}'
+            });
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        });
+    </script>
 </body>
+
 </html>
